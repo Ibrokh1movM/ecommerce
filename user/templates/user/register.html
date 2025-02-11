@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <script>
+        function togglePassword(id) {
+            var passwordInput = document.getElementById(id);
+            passwordInput.type = passwordInput.type === "password" ? "text" : "password";
+        }
+
+        document.addEventListener("DOMContentLoaded", function () {
+            document.getElementById("register-btn").addEventListener("click", function () {
+                this.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Registering...';
+            });
+        });
+    </script>
+</head>
+<body class="bg-light">
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-body">
+                        <h3 class="text-center">Register</h3>
+                        {% if messages %}
+                        <div class="alert alert-warning">
+                            {% for message in messages %}
+                                {{ message }}
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                        <form method="post" action="{% url 'user:register' %}">
+                            {% csrf_token %}
+                            <div class="mb-3">
+                                <label for="split-email" class="form-label">Email</label>
+                                <input class="form-control" name="email" type="email" autocomplete="on" id="split-email" required />
+                            </div>
+                            <div class="mb-3">
+                                <label for="split-password" class="form-label">Password</label>
+                                <div class="input-group">
+                                    <input class="form-control" name="password1" type="password" autocomplete="on" id="split-password" required />
+                                    <button class="btn btn-outline-secondary" type="button" onclick="togglePassword('split-password')">👁</button>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="split-confirm-password" class="form-label">Confirm Password</label>
+                                <div class="input-group">
+                                    <input class="form-control" name="password2" type="password" autocomplete="on" id="split-confirm-password" required />
+                                    <button class="btn btn-outline-secondary" type="button" onclick="togglePassword('split-confirm-password')">👁</button>
+                                </div>
+                            </div>
+                            <button class="btn btn-primary d-block w-100 mt-3" type="submit" name="submit" id="register-btn">Register</button>
+                        </form>
+                        {% if form.errors %}
+                            <div class="alert alert-danger">
+                                <ul>
+                                    {% for field, errors in form.errors.items %}
+                                        {% for error in errors %}
+                                            <li>{{ error }}</li>
+                                        {% endfor %}
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                        {% endif %}
+                        <p class="text-center mt-3">Already have an account? <a href="{% url 'user:login_page' %}">Login here</a></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
