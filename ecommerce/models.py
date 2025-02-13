@@ -186,6 +186,7 @@ class Customer(BaseModel):
     email = models.EmailField()
     description = models.TextField(blank=True, null=True, default="No Description")
     vat_number = models.CharField(max_length=50, blank=True, null=True, default="No VAT number")
+    customer_image = models.ImageField(upload_to='media/customers/img',default='media/team/avatar.png')
 
     send_email_to = models.EmailField()
     address = models.TextField()
