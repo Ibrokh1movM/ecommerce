@@ -32,12 +32,12 @@ class Category(BaseModel):
 
 
 class Product(BaseModel):
-    class RatingChoice(models.IntegerChoices):
-        ONE = 1
-        TWO = 2
-        THREE = 3
-        FOUR = 4
-        FIVE = 5
+    # class RatingChoice(models.IntegerChoices):
+    #     ONE = 1
+    #     TWO = 2
+    #     THREE = 3
+    #     FOUR = 4
+    #     FIVE = 5
 
     name = models.CharField(max_length=255)
     description = models.TextField(null=True, blank=True)
@@ -48,7 +48,6 @@ class Product(BaseModel):
     quantity = models.PositiveIntegerField(default=1, null=True, blank=True)
     stock = models.BooleanField(default=False)
     favorite = models.BooleanField(default=False)
-    rating = models.PositiveIntegerField(choices=RatingChoice.choices, default=RatingChoice.ONE.value)
 
     @property
     def get_absolute_url(self):
@@ -63,6 +62,12 @@ class Product(BaseModel):
 
     def __str__(self):
         return self.name
+
+    def average_rating(self):
+        comments = self.comments.all()
+        if comments:
+            return sum(comment.rating for comment in comments) / len(comments)
+        return 0
 
     class Meta:
         ordering = ['my_order']
@@ -119,9 +124,10 @@ class Comment(BaseModel):
     email = models.EmailField(max_length=255)
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='comments')
     body = models.TextField()
+    rating = models.IntegerField(default=1)
 
     def __str__(self):
-        return f'{self.full_name} - {self.created_at}'
+        return f"{self.full_name} - {self.product.name} ({self.rating}⭐)"
 
     class Meta:
         ordering = ['-created_at']

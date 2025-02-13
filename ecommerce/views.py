@@ -9,6 +9,8 @@ from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 
+
+
 # Create your views here.
 def index(request):
     search_query = request.GET.get('q', '')
@@ -30,7 +32,6 @@ def index(request):
     if search_query:
         products = Product.objects.filter(name__icontains=search_query)
 
-
     context = {
         'products': products
     }
@@ -47,21 +48,48 @@ def product_detail(request, pk):
     return render(request, 'ecommerce/product-details.html', context)
 
 
-def view_comment(request, pk):
-    product = get_object_or_404(Product, pk=pk)
-    form = CommentModelForm()
-    if request.method == 'POST':
-        form = CommentModelForm(request.POST)
-        if form.is_valid():
-            comment = form.save(commit=False)
-            comment.product = product
-            comment.save()
-            return redirect('ecommerce:product_detail', pk)
-    context = {
-        'product': product,
-        'form': form
-    }
-    return render(request, 'ecommerce/product-details.html', context)
+# def view_comment(request, pk):
+#     product = get_object_or_404(Product, pk=pk)
+#     form = CommentModelForm()
+#     if request.method == 'POST':
+#         form = CommentModelForm(request.POST)
+#         if form.is_valid():
+#             comment = form.save(commit=False)
+#             comment.product = product
+#             comment.save()
+#             return redirect('ecommerce:product_detail', pk)
+#     context = {
+#         'product': product,
+#         'form': form
+#     }
+#     return render(request, 'ecommerce/product-details.html', context)
+
+
+
+def comment_view(request, pk):
+    product = get_object_or_404(Product, id=pk)
+    if request.method == "POST":
+        full_name = request.POST.get("full_name")
+        email = request.POST.get("email")
+        body = request.POST.get("body")
+        rating = request.POST.get("rating")
+
+        if not rating:
+            rating = 1
+
+        Comment.objects.create(
+            product=product,
+            full_name=full_name,
+            email=email,
+            body=body,
+            rating=int(rating)
+        )
+
+        messages.success(request, "Your review has been submitted successfully.")
+        return redirect("ecommerce:product_detail", pk=product.id)
+
+    return redirect("ecommerce:product_detail", pk=product.id)
+
 
 
 def customer_list(request):
@@ -172,12 +200,14 @@ def view_cart(request):
 
 def add_to_cart(request, product_id):
     product = get_object_or_404(Product, id=product_id)
-    customer, created = Customer.objects.get_or_create(email=request.user.email, defaults={'full_name': request.user.get_full_name()})
+    if request.user.is_authenticated:
+        customer, created = Customer.objects.get_or_create(email=request.user.email,
+                                                           defaults={'full_name': request.user.get_full_name()})
 
-    if ShoppingCart.objects.filter(user=customer, product=product).exists():
-        messages.warning(request, "Bu mahsulot allaqachon savatchaga qo‘shilgan!")
-    else:
-        ShoppingCart.objects.create(user=customer, product=product)
-        messages.success(request, "Mahsulot savatchaga qo‘shildi!")
+        if ShoppingCart.objects.filter(user=customer, product=product).exists():
+            messages.warning(request, "Bu mahsulot allaqachon savatchaga qo‘shilgan!")
+        else:
+            ShoppingCart.objects.create(user=customer, product=product)
+            messages.success(request, "Mahsulot savatchaga qo‘shildi!")
 
     return redirect('ecommerce:index')

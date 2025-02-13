@@ -26,11 +26,12 @@
                 <div class="col-lg-6">
                     <h5>{{ product.name }}</h5><a class="fs--1 mb-2 d-block"
                                                   href="{% url 'ecommerce:product_detail' product.id %}"> {{ product.category }}</a>
-                    {% with ''|center:product.rating as range %}
-                        {% for f in range %}
-                            <span class="fa fa-star text-warning"></span>
-                        {% endfor %}
-                    {% endwith %}
+                    {#                    {% with ''|center:product.rating as range %}#}
+                    {#                        {% for f in range %}#}
+                    {#                            <span class="fa fa-star text-warning"></span>#}
+                    {#                        {% endfor %}#}
+                    {#                    {% endwith %}#}
+                    <h5>Average Rating: {{ product.average_rating|floatformat:1 }} ⭐</h5>
                     <p class="fs--1">No message</p>
                     <h4 class="fs-1 fs-md-2 text-warning mb-0">$ {{ product.discounted_price }}</h4>
                     <h5 class="fs--1 text-500 mb-0 mt-1">
@@ -111,12 +112,26 @@
                             <div class="tab-pane fade" id="tab-reviews" role="tabpanel" aria-labelledby="reviews-tab">
                                 <div class="row mt-3">
                                     <div class="col-lg-6 mb-4 mb-lg-0">
+                                        {#                                        {% for comment in comments %}#}
+                                        {#                                            <p class="fs--1 mb-2 text-600">{{ comment.full_name }}#}
+                                        {#                                                • {{ comment.updated_at }}</p>#}
+                                        {#                                            <p class="mb-0">{{ comment.body }}</p>#}
+                                        {#                                            <hr class="my-4"/>#}
+                                        {#                                        {% endfor %}#}
                                         {% for comment in comments %}
-                                            <p class="fs--1 mb-2 text-600">{{ comment.full_name }}
-                                                • {{ comment.updated_at }}</p>
+                                            <p class="fs--1 mb-2 text-600">
+                                                {{ comment.full_name }} • {{ comment.updated_at }}
+                                            </p>
                                             <p class="mb-0">{{ comment.body }}</p>
+                                            <p class="text-warning">
+                                                {% for _ in ""|rjust:comment.rating %}
+                                                    ★
+                                                {% endfor %}
+                                            </p>
+
                                             <hr class="my-4"/>
                                         {% endfor %}
+
                                     </div>
                                     <div class="col-lg-6 ps-lg-5">
                                         <form method="post" action="{% url 'ecommerce:comment_view' product.id %}">
@@ -125,7 +140,7 @@
                                             <div class="mb-3">
                                                 <label class="form-label">Rating:</label>
                                                 <div class="mb-3 rating">
-                                                    
+
                                                     <input type="radio" name="rating" id="star1" value="1">
                                                     <label for="star1" class="star">&#9733;</label>
 

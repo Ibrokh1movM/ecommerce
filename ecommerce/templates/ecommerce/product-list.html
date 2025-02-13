@@ -75,14 +75,15 @@
                                                 <del> {{ product.price }} </del>
                                                 <span class="ms-1"> {{ product.discount }}%</span>
                                             </h5>
-                                            <div class="mb-2 mt-3">
-                                                {% with ''|center:product.rating as range %}
-                                                    {% for f in range %}
-                                                        <span class="fa fa-star text-warning"></span>
-                                                    {% endfor %}
-                                                {% endwith %}
-                                                <span class="ms-1">( {{ product.quantity }})</span>
-                                            </div>
+{#                                            <div class="mb-2 mt-3">#}
+{#                                                {% with ''|center:product.rating as range %}#}
+{#                                                    {% for f in range %}#}
+{#                                                        <span class="fa fa-star text-warning"></span>#}
+{#                                                    {% endfor %}#}
+{#                                                {% endwith %}#}
+{#                                                <span class="ms-1">( {{ product.quantity }})</span>#}
+{#                                            </div>#}
+                                                <h5>Average Rating: {{ product.average_rating|floatformat:1 }} ⭐</h5>
                                             <div class="d-none d-lg-block">
                                                 <p class="fs--1 mb-1">Shipping Cost: <strong>$50</strong></p>
                                                 {% if product.stock == True %}

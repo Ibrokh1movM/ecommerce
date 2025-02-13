@@ -21,7 +21,7 @@ admin.site.index_title = "Welcome to Ecommerce Researcher Portal"
 class ProductModelAdmin(ImportExportModelAdmin, admin.ModelAdmin):
     list_display = ('name', 'category', 'price', 'image_tag','my_order')
     search_fields = ('name', 'price')
-    list_filter = ('category', 'quantity', 'rating' )
+    list_filter = ('category', 'quantity')
     autocomplete_fields = ['category']
 
     def image_tag(self, obj):

@@ -312,14 +312,6 @@
                                     <!-- more inner pages-->
                                 </li>
                                 <li class="nav-item"><a class="nav-link"
-                                                        href="../../../app/e-commerce/customer-details.html"
-                                                        aria-expanded="false">
-                                    <div class="d-flex align-items-center"><span class="nav-link-text ps-1">Customer details</span>
-                                    </div>
-                                </a>
-                                    <!-- more inner pages-->
-                                </li>
-                                <li class="nav-item"><a class="nav-link"
                                                         href="{% url 'ecommerce:shopping_cart' %}"
                                                         aria-expanded="false">
                                     <div class="d-flex align-items-center"><span class="nav-link-text ps-1">Shopping cart</span>
@@ -2119,27 +2111,6 @@
                         </div>
                     </li>
                 </ul>
-                {% if user.is_authenticated %}
-                    <div style="margin-left: 20px">
-                        <a href="{% url 'user:logout_page' %}">
-                            <button type="button" class="btn btn-primary">Logout</button>
-                        </a>
-                    </div>
-                    <div style="margin-left: 20px">
-                        <h3>{{ user.email }}</h3>
-                    </div>
-                {% else %}
-                    <div style="margin-left: 20px">
-                        <a href="{% url 'user:login_page' %}">
-                            <button type="button" class="btn btn-primary">Login</button>
-                        </a>
-                    </div>
-                    <div style="margin-left: 20px">
-                        <a href="{% url 'user:register' %}">
-                            <button type="button" class="btn btn-primary">Register</button>
-                        </a>
-                    </div>
-                {% endif %}
                 <ul class="navbar-nav navbar-nav-icons ms-auto flex-row align-items-center">
                     <li class="nav-item">
                         <div class="theme-control-toggle fa-icon-wait px-2">
@@ -2156,8 +2127,8 @@
                     <li class="nav-item">
                         <a class="nav-link px-0 notification-indicator notification-indicator-warning notification-indicator-fill fa-icon-wait"
                            href="{% url 'ecommerce:shopping_cart' %}"><span class="fas fa-shopping-cart"
-                                                                                   data-fa-transform="shrink-7"
-                                                                                   style="font-size: 33px;"></span><span
+                                                                            data-fa-transform="shrink-7"
+                                                                            style="font-size: 33px;"></span><span
                                 class="notification-indicator-number">12</span></a>
 
                     </li>
@@ -2305,15 +2276,13 @@
                                         class="fas fa-crown me-1"></span><span>Go Pro</span></a>
 
                                 <div class="dropdown-divider"></div>
-                                <a class="dropdown-item" href="#!">Set status</a>
-                                <a class="dropdown-item" href="../../../pages/user/profile.html">Profile &amp;
-                                    account</a>
-                                <a class="dropdown-item" href="#!">Feedback</a>
-
-                                <div class="dropdown-divider"></div>
-                                <a class="dropdown-item" href="../../../pages/user/settings.html">Settings</a>
-                                <a class="dropdown-item"
-                                   href="../../../pages/authentication/card/logout.html">Logout</a>
+                                {% if user.is_authenticated %}
+                                    <a class="dropdown-item"
+                                       href="{% url 'user:logout_page' %}">Logout</a>
+                                {% else %}
+                                    <a class="dropdown-item" href="{% url 'user:login_page' %}">Login</a>
+                                    <a class="dropdown-item" href="{% url 'user:register' %}">Register</a>
+                                {% endif %}
                             </div>
                         </div>
                     </li>
@@ -2343,7 +2312,7 @@
                     <div class="col-12 col-sm-auto text-center">
                         <p class="mb-0 text-600">Thank you for creating with Falcon <span
                                 class="d-none d-sm-inline-block">| </span><br class="d-sm-none"/> 2021 &copy; <a
-                                href="https://themewagon.com">Themewagon</a></p>
+                                href="#">Themewagon</a></p>
                     </div>
                     <div class="col-12 col-sm-auto text-center">
                         <p class="mb-0 text-600">v3.4.0</p>
