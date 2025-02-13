@@ -194,6 +194,10 @@ class Customer(BaseModel):
     invoice_prefix = models.CharField(max_length=5, default=generate_invoice_prefix, unique=True)
     invoice_number = models.IntegerField()
 
+    @property
+    def get_absolute_url(self):
+        return self.customer_image.url
+
     def save(self, *args, **kwargs):
         if not self.invoice_prefix:
             self.invoice_prefix = generate_invoice_prefix()

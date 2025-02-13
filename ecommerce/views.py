@@ -12,12 +12,11 @@ from django.contrib import messages
 
 
 
-# Create your views here.
 def index(request):
-    cart_items = []
-    if request.user.is_authenticated:
-        customer = get_object_or_404(Customer, email=request.user.email)
-        cart_items = ShoppingCart.objects.filter(user=customer)
+    # cart_items = []
+    # if request.user.is_authenticated:
+    #     customer = get_object_or_404(Customer, email=request.user.email)
+    #     cart_items = ShoppingCart.objects.filter(user=customer)
     search_query = request.GET.get('q', '')
     filter_type = request.GET.get('filter', '')
     products = Product.objects.all()
@@ -44,7 +43,7 @@ def index(request):
     context = {
         'page_obj': page_obj,
         'products': products,
-        'cart_items': cart_items,
+        # 'cart_items': cart_items,
     }
     return render(request, 'ecommerce/product-list.html', context)
 
