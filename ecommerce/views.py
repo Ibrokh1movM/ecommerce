@@ -1,6 +1,7 @@
 from itertools import product
 from lib2to3.fixes.fix_input import context
 
+from django.core.paginator import Paginator
 from django.shortcuts import render, get_object_or_404, redirect
 
 from ecommerce.models import *
@@ -13,6 +14,10 @@ from django.contrib import messages
 
 # Create your views here.
 def index(request):
+    cart_items = []
+    if request.user.is_authenticated:
+        customer = get_object_or_404(Customer, email=request.user.email)
+        cart_items = ShoppingCart.objects.filter(user=customer)
     search_query = request.GET.get('q', '')
     filter_type = request.GET.get('filter', '')
     products = Product.objects.all()
@@ -32,8 +37,14 @@ def index(request):
     if search_query:
         products = Product.objects.filter(name__icontains=search_query)
 
+    paginator = Paginator(products,3)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
     context = {
-        'products': products
+        'page_obj': page_obj,
+        'products': products,
+        'cart_items': cart_items,
     }
     return render(request, 'ecommerce/product-list.html', context)
 
@@ -46,24 +57,6 @@ def product_detail(request, pk):
         'comments': comments
     }
     return render(request, 'ecommerce/product-details.html', context)
-
-
-# def view_comment(request, pk):
-#     product = get_object_or_404(Product, pk=pk)
-#     form = CommentModelForm()
-#     if request.method == 'POST':
-#         form = CommentModelForm(request.POST)
-#         if form.is_valid():
-#             comment = form.save(commit=False)
-#             comment.product = product
-#             comment.save()
-#             return redirect('ecommerce:product_detail', pk)
-#     context = {
-#         'product': product,
-#         'form': form
-#     }
-#     return render(request, 'ecommerce/product-details.html', context)
-
 
 
 def comment_view(request, pk):
@@ -211,3 +204,27 @@ def add_to_cart(request, product_id):
             messages.success(request, "Mahsulot savatchaga qo‘shildi!")
 
     return redirect('ecommerce:index')
+
+
+def remove_from_cart(request, product_id):
+    product = get_object_or_404(Product, id=product_id)
+    if request.user.is_authenticated:
+        customer, created = Customer.objects.get_or_create(email=request.user.email,
+                                                           defaults={'full_name': request.user.get_full_name()})
+
+        cart_item = ShoppingCart.objects.filter(user=customer, product=product).first()
+
+        if cart_item:
+            cart_item.delete()
+            messages.success(request, "Mahsulot savatchadan o‘chirildi!")
+        else:
+            messages.warning(request, "Bu mahsulot savatchada topilmadi!")
+    else:
+        messages.warning(request, "Iltimos, avval tizimga kiring.")
+
+    return redirect('ecommerce:shopping_cart')
+
+
+
+
+

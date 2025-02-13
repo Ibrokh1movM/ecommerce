@@ -6,7 +6,7 @@
         <div class="card-body">
             <div class="row flex-between-center">
                 <div class="col-sm-auto mb-2 mb-sm-0">
-                    <h6 class="mb-0">Showing 1 pages of {{ products.count }} Products</h6>
+                    <h6 class="mb-0">Showing {{ page_obj.paginator.num_pages }} pages of {{ products.count }} Products</h6>
                 </div>
                 <div class="col-sm-auto">
                     <div class="row gx-2 align-items-center">
@@ -37,13 +37,14 @@
     <div class="card">
         <div class="card-body p-0 overflow-hidden">
             <div class="row g-0">
-                {% for product in products %}
+                {% for product in page_obj %}
                     <div class="col-12 p-card">
                         <div class="row">
                             <div class="col-sm-5 col-md-4">
-                                <div class="position-relative h-sm-100"><img class="card-img-top"
-                                                                             src=" {{ product.get_absolute_url }}"
-                                                                             alt="..."/>
+                                <div class="position-relative h-sm-100">
+                                    <img class="card-img-top"
+                                         src=" {{ product.get_absolute_url }}"
+                                         alt="..."/>
                                     <div class="badge rounded-pill bg-success position-absolute top-0 end-0 me-2 mt-2 fs--2 z-index-2">
                                         New
                                     </div>
@@ -75,15 +76,15 @@
                                                 <del> {{ product.price }} </del>
                                                 <span class="ms-1"> {{ product.discount }}%</span>
                                             </h5>
-{#                                            <div class="mb-2 mt-3">#}
-{#                                                {% with ''|center:product.rating as range %}#}
-{#                                                    {% for f in range %}#}
-{#                                                        <span class="fa fa-star text-warning"></span>#}
-{#                                                    {% endfor %}#}
-{#                                                {% endwith %}#}
-{#                                                <span class="ms-1">( {{ product.quantity }})</span>#}
-{#                                            </div>#}
-                                                <h5>Average Rating: {{ product.average_rating|floatformat:1 }} ⭐</h5>
+                                            {#                                            <div class="mb-2 mt-3">#}
+                                            {#                                                {% with ''|center:product.rating as range %}#}
+                                            {#                                                    {% for f in range %}#}
+                                            {#                                                        <span class="fa fa-star text-warning"></span>#}
+                                            {#                                                    {% endfor %}#}
+                                            {#                                                {% endwith %}#}
+                                            {#                                                <span class="ms-1">( {{ product.quantity }})</span>#}
+                                            {#                                            </div>#}
+                                            <h5>Average Rating: {{ product.average_rating|floatformat:1 }} ⭐</h5>
                                             <div class="d-none d-lg-block">
                                                 <p class="fs--1 mb-1">Shipping Cost: <strong>$50</strong></p>
                                                 {% if product.stock == True %}
@@ -149,16 +150,22 @@
                 {% endfor %}
             </div>
         </div>
-        <div class="card-footer border-top d-flex justify-content-center">
-            <button class="btn btn-falcon-default btn-sm me-2" type="button" disabled="disabled"
-                    data-bs-toggle="tooltip" data-bs-placement="top" title="Prev"><span
-                    class="fas fa-chevron-left"></span></button>
-            <a class="btn btn-sm btn-falcon-default text-primary me-2" href="#!">1</a><a
-                class="btn btn-sm btn-falcon-default me-2" href="#!">2</a><a
-                class="btn btn-sm btn-falcon-default me-2" href="#!"><span class="fas fa-ellipsis-h"></span></a><a
-                class="btn btn-sm btn-falcon-default me-2" href="#!">35</a>
-            <button class="btn btn-falcon-default btn-sm" type="button" data-bs-toggle="tooltip"
-                    data-bs-placement="top" title="Next"><span class="fas fa-chevron-right"></span></button>
+        <div class="pagination">
+    <span class="step-links">
+        {% if page_obj.has_previous %}
+            <a href="?page=1" class="pagination-btn">&laquo; First</a>
+            <a href="?page={{ page_obj.previous_page_number }}" class="pagination-btn">Previous</a>
+        {% endif %}
+
+        <span class="current">
+        Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
+        </span>
+
+        {% if page_obj.has_next %}
+            <a href="?page={{ page_obj.next_page_number }}" class="pagination-btn">Next</a>
+            <a href="?page={{ page_obj.paginator.num_pages }}" class="pagination-btn">Last &raquo;</a>
+        {% endif %}
+    </span>
         </div>
     </div>
 {% endblock %}
