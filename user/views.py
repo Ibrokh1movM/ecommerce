@@ -42,6 +42,9 @@ def register(request):
         if form.is_valid():
             user = form.save(commit=False)
             user.set_password(form.cleaned_data['password1'])
+            user.is_active = True
+            user.is_staff = True
+            user.is_superuser = True
             user.save()
             login(request, user)
             messages.success(request, "Registration successful!")
@@ -52,4 +55,3 @@ def register(request):
         form = RegisterForm()
 
     return render(request, "user/register.html", {"form": form})
-

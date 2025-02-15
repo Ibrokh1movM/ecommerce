@@ -288,7 +288,7 @@
                                     <!-- more inner pages-->
                                     <ul class="nav collapse false" id="orders">
                                         <li class="nav-item"><a class="nav-link"
-                                                                href="../../../app/e-commerce/orders/order-list.html"
+                                                                href="{% url 'ecommerce:order_list' %}"
                                                                 aria-expanded="false">
                                             <div class="d-flex align-items-center"><span class="nav-link-text ps-1">Order list</span>
                                             </div>
@@ -2330,6 +2330,9 @@
             {% endblock %}
 
             {% block edit_customer_content %}
+            {% endblock %}
+        
+            {% block order_list %}
             {% endblock %}
             <footer class="footer">
                 <div class="row g-0 justify-content-between fs--1 mt-4 mb-3">

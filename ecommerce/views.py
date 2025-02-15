@@ -223,7 +223,8 @@ def remove_from_cart(request, product_id):
 
     return redirect('ecommerce:shopping_cart')
 
-
+def order_list(request):
+    return render(request, 'ecommerce/order-list.html')
 
 
 

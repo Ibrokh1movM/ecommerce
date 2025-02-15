@@ -43,7 +43,6 @@ class Product(BaseModel):
     description = models.TextField(null=True, blank=True)
     price = models.DecimalField(max_digits=14, decimal_places=2)
     discount = models.PositiveIntegerField(default=0)
-    image = models.ImageField(upload_to='media/products/')
     category = models.ForeignKey(Category, on_delete=models.SET_NULL, related_name='products', null=True, blank=True)
     quantity = models.PositiveIntegerField(default=1, null=True, blank=True)
     stock = models.BooleanField(default=False)
@@ -51,7 +50,8 @@ class Product(BaseModel):
 
     @property
     def get_absolute_url(self):
-        return self.image.url
+        image = self.product_images.filter(is_primary=True)[0]
+        return image.image.url
 
     @property
     def discounted_price(self):
@@ -75,24 +75,14 @@ class Product(BaseModel):
         verbose_name_plural = 'products'
 
 
-class Img(BaseModel):
-    image = models.ImageField(upload_to='media/img/')
-
-    @property
-    def get_absolute_url(self):
-        return self.image.url
-
-    def __str__(self):
-        return self.image.name
-
-
-class ProductImg(BaseModel):
+class Image(BaseModel):
     product = models.ForeignKey(Product, on_delete=models.SET_NULL, related_name='product_images', null=True,
                                 blank=True)
-    image = models.ForeignKey(Img, on_delete=models.SET_NULL, null=True, blank=True)
+    image = models.ImageField(upload_to='media/products/', null=True, blank=True)
+    is_primary = models.BooleanField(default=False)
 
     def __str__(self):
-        return self.product.name
+        return f'{self.image} => {self.is_primary}'
 
 
 class Attribute(models.Model):
