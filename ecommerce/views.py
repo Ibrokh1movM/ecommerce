@@ -36,7 +36,7 @@ def index(request):
     if search_query:
         products = Product.objects.filter(name__icontains=search_query)
 
-    paginator = Paginator(products,3)
+    paginator = Paginator(products,4)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
 

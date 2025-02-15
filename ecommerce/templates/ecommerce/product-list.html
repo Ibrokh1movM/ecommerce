@@ -61,7 +61,7 @@
                                                                          href="{% url 'ecommerce:product_detail' product.id %}"> {{ product.category }}</a>
                                         </p>
                                         <ul class="list-unstyled d-none d-lg-block">
-                                            {% for product_attribute in product.product_attributes.all|slice:":5" %}
+                                            {% for product_attribute in product.product_attributes.all|slice:":7" %}
                                                 <li>
                                                     <span class="fas fa-circle" data-fa-transform="shrink-12"></span>
                                                     <span>{{ product_attribute.attribute_value.value }}</span>
