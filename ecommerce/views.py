@@ -1,15 +1,16 @@
-from itertools import product
-from lib2to3.fixes.fix_input import context
-
-from django.core.paginator import Paginator
-from django.shortcuts import render, get_object_or_404, redirect
-
-from ecommerce.models import *
-from ecommerce.forms import *
-from django.http import JsonResponse
-from django.contrib.auth.decorators import login_required
+from django.shortcuts import get_object_or_404, redirect, render
 from django.contrib import messages
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView, View
+from django.urls import reverse_lazy
+from django.core.paginator import Paginator
+from django.http import JsonResponse
+from ecommerce.utils import generate_invoice_prefix
 
+
+
+from ecommerce.models import Product, Customer, ShoppingCart, Comment
+from ecommerce.forms import CustomerModelForm
 
 
 def index(request):
@@ -47,6 +48,30 @@ def index(request):
     }
     return render(request, 'ecommerce/product-list.html', context)
 
+# class ProductListView(ListView):
+#     model = Product
+#     template_name = 'ecommerce/product-list.html'
+#     context_object_name = 'products'
+#     paginate_by = 4
+#
+#     def get_queryset(self):
+#         queryset = Product.objects.all()
+#         search_query = self.request.GET.get('q', '')
+#         filter_type = self.request.GET.get('filter', '')
+#
+#         if filter_type == 'date':
+#             queryset = queryset.order_by('-created_at')
+#         elif filter_type == 'name':
+#             queryset = queryset.order_by('name')
+#         elif filter_type == 'stock':
+#             queryset = queryset.order_by('-stock')
+#         elif filter_type == 'price_rating':
+#             queryset = queryset.order_by('-price', '-rating')
+#
+#         if search_query:
+#             queryset = queryset.filter(name__icontains=search_query)
+#
+#         return queryset
 
 def product_detail(request, pk):
     product = get_object_or_404(Product, pk=pk)
@@ -56,6 +81,16 @@ def product_detail(request, pk):
         'comments': comments
     }
     return render(request, 'ecommerce/product-details.html', context)
+
+# class ProductDetailView(DetailView):
+#     model = Product
+#     template_name = 'ecommerce/product-details.html'
+#     context_object_name = 'product'
+#
+#     def get_context_data(self, **kwargs):
+#         context = super().get_context_data(**kwargs)
+#         context['comments'] = Comment.objects.filter(product=self.object)
+#         return context
 
 
 def comment_view(request, pk):
@@ -83,6 +118,20 @@ def comment_view(request, pk):
     return redirect("ecommerce:product_detail", pk=product.id)
 
 
+# class CommentCreateView(View):
+#     def post(self, request, pk):
+#         product = get_object_or_404(Product, id=pk)
+#         full_name = request.POST.get("full_name")
+#         email = request.POST.get("email")
+#         body = request.POST.get("body")
+#         rating = request.POST.get("rating", 1)
+#
+#         Comment.objects.create(
+#             product=product, full_name=full_name, email=email, body=body, rating=int(rating)
+#         )
+#         messages.success(request, "Your review has been submitted successfully.")
+#         return redirect("ecommerce:product_detail", pk=product.id)
+
 
 def customer_list(request):
     filter_type = request.GET.get('filter', '')
@@ -106,6 +155,25 @@ def customer_list(request):
 
     return render(request, template_name='ecommerce/customers.html', context=context)
 
+# class CustomerListView(ListView):
+#     model = Customer
+#     template_name = 'ecommerce/customers.html'
+#     context_object_name = 'customers'
+#
+#     def get_queryset(self):
+#         queryset = Customer.objects.all()
+#         search_query = self.request.GET.get('q', '')
+#         filter_type = self.request.GET.get('filter', '')
+#
+#         if filter_type == 'filter':
+#             queryset = queryset.order_by('full_name')
+#         else:
+#             queryset = queryset.order_by('-created_at')
+#
+#         if search_query:
+#             queryset = queryset.filter(full_name__icontains=search_query)
+#
+#         return queryset
 
 def customer_details(request, pk):
     customer = get_object_or_404(Customer, id=pk)
@@ -117,6 +185,11 @@ def customer_details(request, pk):
     }
 
     return render(request, template_name='ecommerce/customer-details.html', context=context)
+
+# class CustomerDetailView(DetailView):
+#     model = Customer
+#     template_name = 'ecommerce/customer-details.html'
+#     context_object_name = 'customer'
 
 
 def add_customer(request):
@@ -133,6 +206,12 @@ def add_customer(request):
 
     return render(request, 'ecommerce/add_customer.html', {'form': form})
 
+# class CustomerCreateView(CreateView):
+#     model = Customer
+#     form_class = CustomerModelForm
+#     template_name = 'ecommerce/add_customer.html'
+#     success_url = reverse_lazy('ecommerce:customer_list')
+
 
 def edit_customer(request, pk):
     customer = get_object_or_404(Customer, id=pk)
@@ -148,6 +227,11 @@ def edit_customer(request, pk):
 
     return render(request, 'ecommerce/edit_customer.html', {'form': form})
 
+# class CustomerUpdateView(UpdateView):
+#     model = Customer
+#     form_class = CustomerModelForm
+#     template_name = 'ecommerce/edit_customer.html'
+#     success_url = reverse_lazy('ecommerce:customer_list')
 
 def delete_customer(request, pk):
     try:
@@ -157,6 +241,13 @@ def delete_customer(request, pk):
     except Customer.DoesNotExist as e:
         print(e)
 
+# class CustomerDeleteView(DeleteView):
+#     model = Customer
+#     success_url = reverse_lazy('ecommerce:customer_list')
+#
+#     def get(self, request, *args, **kwargs):
+#         return self.post(request, *args, **kwargs)
+
 
 def toggle_favourite(request, product_id):
     product = get_object_or_404(Product, id=product_id)
@@ -165,6 +256,13 @@ def toggle_favourite(request, product_id):
     product.save()
 
     return JsonResponse({"favorite": product.favorite})
+
+# class ToggleFavoriteView(View):
+#     def post(self, request, product_id):
+#         product = get_object_or_404(Product, id=product_id)
+#         product.favorite = not product.favorite
+#         product.save()
+#         return JsonResponse({"favorite": product.favorite})
 
 
 def view_cart(request):
@@ -189,6 +287,14 @@ def view_cart(request):
 
     return render(request, 'ecommerce/shopping-cart.html', context)
 
+# class CartView(LoginRequiredMixin, View):
+#     def get(self, request):
+#         customer = get_object_or_404(Customer, email=request.user.email)
+#         cart_items = ShoppingCart.objects.filter(user=customer)
+#         total_price = sum(cart.get_total_price() for cart in cart_items) if cart_items else 0
+#         return render(request, 'ecommerce/shopping-cart.html', {'cart_items': cart_items, 'total_price': total_price})
+
+
 
 def add_to_cart(request, product_id):
     product = get_object_or_404(Product, id=product_id)
@@ -203,6 +309,17 @@ def add_to_cart(request, product_id):
             messages.success(request, "Mahsulot savatchaga qo‘shildi!")
 
     return redirect('ecommerce:index')
+
+# class AddToCartView(LoginRequiredMixin, View):
+#     def post(self, request, product_id):
+#         product = get_object_or_404(Product, id=product_id)
+#         customer, _ = Customer.objects.get_or_create(email=request.user.email, defaults={'full_name': request.user.get_full_name()})
+#         if ShoppingCart.objects.filter(user=customer, product=product).exists():
+#             messages.warning(request, "Bu mahsulot allaqachon savatchaga qo‘shilgan!")
+#         else:
+#             ShoppingCart.objects.create(user=customer, product=product)
+#             messages.success(request, "Mahsulot savatchaga qo‘shildi!")
+#         return redirect('ecommerce:index')
 
 
 def remove_from_cart(request, product_id):
@@ -223,8 +340,23 @@ def remove_from_cart(request, product_id):
 
     return redirect('ecommerce:shopping_cart')
 
+# class RemoveFromCartView(LoginRequiredMixin, View):
+#     def post(self, request, product_id):
+#         product = get_object_or_404(Product, id=product_id)
+#         customer = get_object_or_404(Customer, email=request.user.email)
+#         cart_item = ShoppingCart.objects.filter(user=customer, product=product).first()
+#         if cart_item:
+#             cart_item.delete()
+#             messages.success(request, "Mahsulot savatchadan o‘chirildi!")
+#         else:
+#             messages.warning(request, "Bu mahsulot savatchada topilmadi!")
+#         return redirect('ecommerce:shopping_cart')
+
 def order_list(request):
     return render(request, 'ecommerce/order-list.html')
 
+# class OrderListView(View):
+#     def get(self, request):
+#         return render(request, 'ecommerce/order-list.html')
 
 

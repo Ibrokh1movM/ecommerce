@@ -4,8 +4,9 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import render, redirect
 from django.urls import reverse
 from .forms import RegisterForm
-
+from django.core.mail import send_mail
 from user.forms import LoginForm
+from config.settings import DEFAULT_FROM_EMAIL
 
 
 # Create your views here.
@@ -41,11 +42,19 @@ def register(request):
         form = RegisterForm(request.POST)
         if form.is_valid():
             user = form.save(commit=False)
+            get_name_by_email = user.email.split('@')[0]
             user.set_password(form.cleaned_data['password1'])
             user.is_active = True
             user.is_staff = True
             user.is_superuser = True
             user.save()
+            send_mail(
+                f'{get_name_by_email}',
+                'You successfully registered',
+                DEFAULT_FROM_EMAIL,
+                [user.email],
+                fail_silently=False
+            )
             login(request, user)
             messages.success(request, "Registration successful!")
             return redirect('ecommerce:index')
