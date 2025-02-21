@@ -1,0 +1,28 @@
+.rating {
+    direction: rtl;
+    display: inline-block;
+}
+
+.rating input {
+    display: none;
+}
+
+.rating label {
+    font-size: 32px;
+    color: #ccc;
+    padding: 5px;
+    cursor: pointer;
+}
+
+.rating input:checked ~ label {
+    color: gold;
+}
+
+.rating label:hover,
+.rating label:hover ~ label {
+    color: gold;
+}
+
+.rating input:checked + label {
+    color: gold;
+}
