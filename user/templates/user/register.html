@@ -51,6 +51,16 @@
             transform: scale(1.05);
         }
 
+        .btn-twitter {
+            background: #1DA1F2;
+            color: white;
+        }
+
+        .btn-twitter:hover {
+            background: #0d8ddb;
+            transform: scale(1.05);
+        }
+
         .btn i {
             font-size: 16px;
         }
@@ -67,6 +77,7 @@
             border-bottom-left-radius: 0;
         }
     </style>
+
     <script>
         function togglePassword(id) {
             var passwordInput = document.getElementById(id);
@@ -137,13 +148,17 @@
                         </div>
                     {% endif %}
                     <div class="social-buttons">
-                        <a class="btn btn-custom btn-google" href="{% url "social:begin" "google-oauth2" %}">
+                        <a class="btn btn-custom btn-google" href="{% url 'social:begin' 'google-oauth2' %}">
                             <i class="fab fa-google"></i> Continue with Google
                         </a>
-                        <a class="btn btn-custom btn-facebook" href="{% url "social:begin" "facebook" %}">
+                        <a class="btn btn-custom btn-facebook" href="{% url 'social:begin' 'facebook' %}">
                             <i class="fab fa-facebook-f"></i> Continue with Facebook
                         </a>
+                        <a class="btn btn-custom btn-twitter" href="{% url 'social:begin' 'twitter' %}">
+                            <i class="fab fa-twitter"></i> Continue with Twitter
+                        </a>
                     </div>
+
                     <p class="text-center mt-3">Already have an account? <a href="{% url 'user:login_page' %}">Login
                         here</a></p>
                 </div>
