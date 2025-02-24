@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verify Your Email</title>
+</head>
+<body style="margin: 0; padding: 0; font-family: Arial, sans-serif; background: linear-gradient(135deg, #4A90E2, #9013FE); color: #333;">
+
+<table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0">
+    <tr>
+        <td align="center" style="padding: 50px 15px;">
+            <!-- Card -->
+            <table role="presentation" width="100%" max-width="600px" cellspacing="0" cellpadding="0" border="0"
+                   style="background: #ffffff; border-radius: 12px; box-shadow: 0 5px 20px rgba(0,0,0,0.15); overflow: hidden;">
+
+                <!-- Header -->
+                <tr>
+                    <td align="center"
+                        style="padding: 30px; background: linear-gradient(135deg, #5865F2, #404EED); color: #ffffff; font-size: 26px; font-weight: bold;">
+                        ✉️ Verify Your Email
+                    </td>
+                </tr>
+
+                <!-- Body -->
+                <tr>
+                    <td style="padding: 40px; text-align: center; font-size: 18px; color: #555;">
+                        <p style="margin: 0; font-size: 20px; font-weight: bold; color: #222;">Hello, {{ user.name }}
+                            👋</p>
+                        <p style="margin-top: 15px;">You're almost there! Click the button below to verify your email
+                            and activate your account.</p>
+
+                        <p style="margin-top: 30px;">
+                            <a href="{{ request.scheme }}://{{ domain }}{% url 'user:verify-email-confirm' uidb64=uid token=token %}"
+                               style="display: inline-block; padding: 14px 35px; font-size: 18px; font-weight: bold; color: #ffffff; background: #5865F2; text-decoration: none; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.2); transition: 0.3s;">
+                                ✅ Verify Email
+                            </a>
+                        </p>
+
+                        <p style="margin-top: 40px; font-size: 14px; color: #666;">
+                            If the button doesn't work, copy and paste the following link into your browser:
+                        </p>
+
+                        <p style="word-break: break-word; background: #f4f4f4; padding: 10px; border-radius: 5px; font-size: 14px; color: #444;">
+                            {{ request.scheme }}://{{ domain }}{% url 'user:verify-email-confirm' uidb64=uid token=token %}
+                        </p>
+
+                        <p style="margin-top: 30px; font-size: 16px; font-weight: bold; color: #222;">Best Regards,</p>
+                        <p style="margin: 0; font-size: 16px; color: #444;">💙 The Delight Team</p>
+                    </td>
+                </tr>
+
+                <!-- Footer -->
+                <tr>
+                    <td align="center" style="padding: 25px; background: #f4f4f4; font-size: 14px; color: #777;">
+                        <p>&copy; {% now 'Y' %} <a href="https://delighto.medium.com"
+                                                   style="color: #5865F2; text-decoration: none; font-weight: bold;">Blog</a>
+                        </p>
+                        <p>Follow us on <a href="https://twitter.com/DelightGbolahan"
+                                           style="color: #5865F2; text-decoration: none; font-weight: bold;">Twitter</a>
+                        </p>
+                    </td>
+                </tr>
+
+            </table>
+        </td>
+    </tr>
+</table>
+
+</body>
+</html>
