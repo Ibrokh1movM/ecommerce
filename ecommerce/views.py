@@ -46,7 +46,7 @@ def index(request):
         'products': products,
         # 'cart_items': cart_items,
     }
-    return render(request, 'ecommerce/product-list.html', context)
+    return render(request, 'ecommerce/app/e-commerce/product/product-list.html', context)
 
 # class ProductListView(ListView):
 #     model = Product
@@ -80,7 +80,7 @@ def product_detail(request, pk):
         'product': product,
         'comments': comments
     }
-    return render(request, 'ecommerce/product-details.html', context)
+    return render(request, 'ecommerce/app/e-commerce/product/product-details.html', context)
 
 # class ProductDetailView(DetailView):
 #     model = Product
@@ -153,7 +153,7 @@ def customer_list(request):
         'customers': customers,
     }
 
-    return render(request, template_name='ecommerce/customers.html', context=context)
+    return render(request, template_name='ecommerce/app/e-commerce/customers.html', context=context)
 
 # class CustomerListView(ListView):
 #     model = Customer
@@ -184,7 +184,7 @@ def customer_details(request, pk):
         'created_date': created_date,
     }
 
-    return render(request, template_name='ecommerce/customer-details.html', context=context)
+    return render(request, template_name='ecommerce/app/e-commerce/customer-details.html', context=context)
 
 # class CustomerDetailView(DetailView):
 #     model = Customer
@@ -204,7 +204,7 @@ def add_customer(request):
     else:
         form = CustomerModelForm()
 
-    return render(request, 'ecommerce/add_customer.html', {'form': form})
+    return render(request, 'ecommerce/app/e-commerce/add_customer.html', {'form': form})
 
 # class CustomerCreateView(CreateView):
 #     model = Customer
@@ -225,7 +225,7 @@ def edit_customer(request, pk):
     else:
         form = CustomerModelForm(instance=customer)
 
-    return render(request, 'ecommerce/edit_customer.html', {'form': form})
+    return render(request, 'ecommerce/app/e-commerce/edit_customer.html', {'form': form})
 
 # class CustomerUpdateView(UpdateView):
 #     model = Customer
@@ -285,7 +285,7 @@ def view_cart(request):
         'total_price': total_price
     }
 
-    return render(request, 'ecommerce/shopping-cart.html', context)
+    return render(request, 'ecommerce/app/e-commerce/shopping-cart.html', context)
 
 # class CartView(LoginRequiredMixin, View):
 #     def get(self, request):
@@ -353,10 +353,49 @@ def remove_from_cart(request, product_id):
 #         return redirect('ecommerce:shopping_cart')
 
 def order_list(request):
-    return render(request, 'ecommerce/order-list.html')
+    return render(request, 'ecommerce/app/e-commerce/orders/order-list.html')
 
 # class OrderListView(View):
 #     def get(self, request):
 #         return render(request, 'ecommerce/order-list.html')
 
+def product_grid(request):
+    return render(request,'ecommerce/app/e-commerce/orders/order-list.html')
 
+def default(request):
+    products = Product.objects.all()
+    paginator = Paginator(products, 3)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+    context = {
+        'page_obj': page_obj,
+        'products': products,
+    }
+    return render(request, 'ecommerce/index.html', context)
+
+def followers(request):
+    return render(request, 'ecommerce/app/social/followers.html')
+
+def profile(request):
+    return render(request,'ecommerce/pages/user/profile.html')
+
+def analytics(request):
+    return render(request,'ecommerce/dashboard/analytics.html')
+
+def crm(request):
+    return render(request, 'ecommerce/dashboard/crm.html')
+
+def e_commerce(request):
+    return render(request, 'ecommerce/dashboard/e-commerce.html')
+
+def project_management(request):
+    return render(request, 'ecommerce/dashboard/project-management.html')
+
+def saas(request):
+    return render(request, 'ecommerce/dashboard/saas.html')
+
+def calendar(request):
+    return render(request, 'ecommerce/app/calendar.html')
+
+def chat(request):
+    return render(request, 'ecommerce/app/chat.html')
