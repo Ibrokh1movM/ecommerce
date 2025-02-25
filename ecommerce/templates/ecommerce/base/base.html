@@ -207,14 +207,14 @@
                             </div>
                         </a>
                             <ul class="nav collapse false" id="email">
-                                <li class="nav-item"><a class="nav-link" href="../../../app/email/inbox.html"
+                                <li class="nav-item"><a class="nav-link" href="{% url 'ecommerce:inbox' %}"
                                                         aria-expanded="false">
                                     <div class="d-flex align-items-center"><span class="nav-link-text ps-1">Inbox</span>
                                     </div>
                                 </a>
                                     <!-- more inner pages-->
                                 </li>
-                                <li class="nav-item"><a class="nav-link" href="../../../app/email/email-detail.html"
+                                <li class="nav-item"><a class="nav-link" href="{% url 'ecommerce:email-detail' %}"
                                                         aria-expanded="false">
                                     <div class="d-flex align-items-center"><span
                                             class="nav-link-text ps-1">Email detail</span>
@@ -222,7 +222,7 @@
                                 </a>
                                     <!-- more inner pages-->
                                 </li>
-                                <li class="nav-item"><a class="nav-link" href="../../../app/email/compose.html"
+                                <li class="nav-item"><a class="nav-link" href="{% url 'ecommerce:compose' %}"
                                                         aria-expanded="false">
                                     <div class="d-flex align-items-center"><span
                                             class="nav-link-text ps-1">Compose</span>
@@ -2392,6 +2392,16 @@
 
             {% block chat %}
             {% endblock %}
+
+            {% block inbox %}
+            {% endblock %}
+
+            {% block email_detail %}
+            {% endblock %}
+
+            {% block compose %}
+            {% endblock %}
+
 
             <footer class="footer">
                 <div class="row g-0 justify-content-between fs--1 mt-4 mb-3">

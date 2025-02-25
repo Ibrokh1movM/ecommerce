@@ -29,4 +29,7 @@ urlpatterns = [
     path('saas/', views.saas, name='saas'),
     path('calendar/', views.calendar, name='calendar'),
     path('chat/', views.chat, name='chat'),
+    path('inbox/', views.inbox, name='inbox'),
+    path('email-detail/', views.email_detail, name='email-detail'),
+    path('compose/', views.compose, name='compose'),
 ]

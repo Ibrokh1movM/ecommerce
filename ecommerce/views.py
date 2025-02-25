@@ -399,3 +399,12 @@ def calendar(request):
 
 def chat(request):
     return render(request, 'ecommerce/app/chat.html')
+
+def inbox(request):
+    return render(request, 'ecommerce/app/email/inbox.html')
+
+def email_detail(request):
+    return render(request, 'ecommerce/app/email/email-detail.html')
+
+def compose(request):
+    return render(request, 'ecommerce/app/email/compose.html')
