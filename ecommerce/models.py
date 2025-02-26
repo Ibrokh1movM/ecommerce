@@ -5,6 +5,7 @@ from phonenumber_field.modelfields import PhoneNumberField
 import random
 import string
 import uuid
+from django.template.defaultfilters import slugify
 
 
 # Create your models here.
@@ -21,6 +22,12 @@ class BaseModel(models.Model):
 
 class Category(BaseModel):
     title = models.CharField(max_length=100, unique=True)
+    slug = models.SlugField(unique=True, null=True, blank=True)
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = slugify(self.title)
+            super(Category, self).save(*args, **kwargs)
 
     def __str__(self):
         return self.title
@@ -47,6 +54,12 @@ class Product(BaseModel):
     quantity = models.PositiveIntegerField(default=1, null=True, blank=True)
     stock = models.BooleanField(default=False)
     favorite = models.BooleanField(default=False)
+    slug = models.SlugField(unique=True, null=True, blank=True)
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = slugify(self.name)
+            super(Product, self).save(*args, **kwargs)
 
     @property
     def get_absolute_url(self):
