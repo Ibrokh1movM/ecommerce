@@ -6,7 +6,11 @@
         <div class="card-body">
             <div class="row flex-between-center">
                 <div class="col-sm-auto mb-2 mb-sm-0">
-                    <h6 class="mb-0">Showing {{ page_obj.paginator.num_pages }} pages of {{ products.count }} Products</h6>
+                    <h6 class="mb-0">Showing {{ page_obj.paginator.num_pages }} pages of {{ products.count }}
+                        Products</h6>
+                </div>
+                <div class="col-1">
+                    <a class="btn btn-outline-success" href="{% url 'ecommerce:product_create' %}"> Add Product </a>
                 </div>
                 <div class="col-sm-auto">
                     <div class="row gx-2 align-items-center">
@@ -47,7 +51,7 @@
 
                                          alt="..."/>
                                     <div class="badge rounded-pill bg-success position-absolute top-0 end-0 me-2 mt-2 fs--2 z-index-2">
-                                        New 
+                                        New
                                     </div>
                                 </div>
                             </div>

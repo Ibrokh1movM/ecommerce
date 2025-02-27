@@ -2,6 +2,10 @@ from django import forms
 from phonenumber_field.modelfields import PhoneNumberField
 from ecommerce.models import *
 
+class ProductModelForm(forms.ModelForm):
+    class Meta:
+        model = Product
+        fields = '__all__'
 
 class CommentModelForm(forms.ModelForm):
     class Meta:

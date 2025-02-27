@@ -6,6 +6,7 @@ from django.urls import reverse_lazy
 from django.core.paginator import Paginator
 from django.http import JsonResponse
 from ecommerce.utils import generate_invoice_prefix
+from .forms import ProductModelForm
 
 
 
@@ -72,6 +73,14 @@ def index(request):
 #             queryset = queryset.filter(name__icontains=search_query)
 #
 #         return queryset
+
+
+class CreateProduct(CreateView):
+    model = Product
+    template_name = 'ecommerce/create.html'
+    form_class = ProductModelForm
+    success_url = reverse_lazy('ecommerce:index')
+
 
 def product_detail(request, pk):
     product = get_object_or_404(Product, pk=pk)

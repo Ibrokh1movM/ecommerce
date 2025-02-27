@@ -27,7 +27,7 @@ class Category(BaseModel):
     def save(self, *args, **kwargs):
         if not self.slug:
             self.slug = slugify(self.title)
-            super(Category, self).save(*args, **kwargs)
+        super(Category, self).save(*args, **kwargs)
 
     def __str__(self):
         return self.title
@@ -59,12 +59,12 @@ class Product(BaseModel):
     def save(self, *args, **kwargs):
         if not self.slug:
             self.slug = slugify(self.name)
-            super(Product, self).save(*args, **kwargs)
+        super(Product, self).save(*args, **kwargs)
 
     @property
     def get_absolute_url(self):
-        image = self.product_images.filter(is_primary=True)[0]
-        return image.image.url
+        image = self.product_images.filter(is_primary=True).first()
+        return image.image.url if image else None
 
     @property
     def discounted_price(self):
@@ -78,9 +78,7 @@ class Product(BaseModel):
 
     def average_rating(self):
         comments = self.comments.all()
-        if comments:
-            return sum(comment.rating for comment in comments) / len(comments)
-        return 0
+        return sum(comment.rating for comment in comments) / len(comments) if comments.exists() else 0
 
     class Meta:
         ordering = ['my_order']
@@ -91,7 +89,7 @@ class Product(BaseModel):
 class Image(BaseModel):
     product = models.ForeignKey(Product, on_delete=models.SET_NULL, related_name='product_images', null=True,
                                 blank=True)
-    image = models.ImageField(upload_to='media/products/', null=True, blank=True)
+    image = models.ImageField(upload_to='media/products/', null=True, blank=True, default='media/products/default.webp')
     is_primary = models.BooleanField(default=False)
 
     def __str__(self):
@@ -193,7 +191,7 @@ class Customer(BaseModel):
 
     send_email_to = models.EmailField()
     address = models.TextField()
-    phone_number = PhoneNumberField(region="UZ")
+    phone_number = PhoneNumberField(region="UZ", blank=True, null=True)
     invoice_prefix = models.CharField(max_length=5, default=generate_invoice_prefix, unique=True)
     invoice_number = models.IntegerField()
 
@@ -220,6 +218,7 @@ class Customer(BaseModel):
 class ShoppingCart(BaseModel):
     user = models.ForeignKey(Customer, on_delete=models.CASCADE, related_name='shopping_cart')
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='shopping_cart')
+    quantity = models.PositiveIntegerField(default=1)
 
     def get_total_price(self):
         return self.product.discounted_price
