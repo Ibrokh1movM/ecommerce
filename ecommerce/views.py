@@ -82,8 +82,8 @@ class CreateProduct(CreateView):
     success_url = reverse_lazy('ecommerce:index')
 
 
-def product_detail(request, pk):
-    product = get_object_or_404(Product, pk=pk)
+def product_detail(request, slug):
+    product = get_object_or_404(Product, slug=slug)
     comments = Comment.objects.filter(product=product)
     context = {
         'product': product,
