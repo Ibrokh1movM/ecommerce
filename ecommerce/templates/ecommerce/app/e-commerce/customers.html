@@ -22,18 +22,43 @@
                             <button class="btn btn-falcon-default btn-sm ms-2" type="button">Apply</button>
                         </div>
                     </div>
-                    <div id="table-customers-replace-element">
-                        <!-- Bu tugma 'add_customer' sahifasiga yo'naltiradi -->
-                        <a href="{% url 'ecommerce:add_customer' %}" class="btn btn-falcon-default btn-sm">
-                            <span class="fas fa-plus" data-fa-transform="shrink-3 down-2"></span>
-                            <span class="d-none d-sm-inline-block ms-1">New</span>
+                    <div id="table-customers-replace-element" class="d-flex gap-2 align-items-center">
+                        <!-- 'add_customer' sahifasiga yo'naltiruvchi tugma -->
+                        <a href="{% url 'ecommerce:add_customer' %}"
+                           class="btn btn-primary btn-sm d-flex align-items-center">
+                            <span class="fas fa-plus me-1"></span> New
                         </a>
-                        <button class="btn btn-falcon-default btn-sm mx-2" type="button"
+
+                        <!-- Filter tugmasi -->
+                        <button class="btn btn-secondary btn-sm d-flex align-items-center" type="button"
                                 onclick="location.href='?filter=filter'">
-                            <span class="fas fa-filter" data-fa-transform="shrink-3 down-2"></span>
-                            <span class="d-none d-sm-inline-block ms-1">Filter</span>
+                            <span class="fas fa-filter me-1"></span> Filter
                         </button>
+
+                        <!-- Export menyusi -->
+                        <div class="dropdown">
+                            <button class="btn btn-light btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown"
+                                    aria-expanded="false">
+                                <span class="fas fa-download me-1"></span> Export
+                            </button>
+                            <ul class="dropdown-menu">
+                                <li>
+                                    <form action="{% url 'ecommerce:export_data' %}" class="px-3 py-2">
+                                        <select class="form-select form-select-sm mb-2" name="format">
+                                            <option value="none" selected>Choose format...</option>
+                                            <option value="json">JSON</option>
+                                            <option value="xlsx">XLSX</option>
+                                            <option value="csv">CSV</option>
+                                        </select>
+                                        <button class="btn btn-success btn-sm w-100" type="submit">
+                                            <span class="fas fa-file-export me-1"></span> Export
+                                        </button>
+                                    </form>
+                                </li>
+                            </ul>
+                        </div>
                     </div>
+
                 </div>
             </div>
         </div>

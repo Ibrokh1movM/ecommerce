@@ -1,17 +1,18 @@
+import csv
+import json
+from django.http import HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView, View
 from django.urls import reverse_lazy
 from django.core.paginator import Paginator
-from django.http import JsonResponse
 from ecommerce.utils import generate_invoice_prefix
 from .forms import ProductModelForm
-
-
-
 from ecommerce.models import Product, Customer, ShoppingCart, Comment
 from ecommerce.forms import CustomerModelForm
+from openpyxl import Workbook
+from io import BytesIO,StringIO
 
 
 def index(request):
@@ -38,7 +39,7 @@ def index(request):
     if search_query:
         products = Product.objects.filter(name__icontains=search_query)
 
-    paginator = Paginator(products,4)
+    paginator = Paginator(products, 4)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
 
@@ -48,6 +49,7 @@ def index(request):
         # 'cart_items': cart_items,
     }
     return render(request, 'ecommerce/app/e-commerce/product/product-list.html', context)
+
 
 # class ProductListView(ListView):
 #     model = Product
@@ -90,6 +92,7 @@ def product_detail(request, slug):
         'comments': comments
     }
     return render(request, 'ecommerce/app/e-commerce/product/product-details.html', context)
+
 
 # class ProductDetailView(DetailView):
 #     model = Product
@@ -164,6 +167,7 @@ def customer_list(request):
 
     return render(request, template_name='ecommerce/app/e-commerce/customers.html', context=context)
 
+
 # class CustomerListView(ListView):
 #     model = Customer
 #     template_name = 'ecommerce/customers.html'
@@ -195,6 +199,7 @@ def customer_details(request, pk):
 
     return render(request, template_name='ecommerce/app/e-commerce/customer-details.html', context=context)
 
+
 # class CustomerDetailView(DetailView):
 #     model = Customer
 #     template_name = 'ecommerce/customer-details.html'
@@ -214,6 +219,7 @@ def add_customer(request):
         form = CustomerModelForm()
 
     return render(request, 'ecommerce/app/e-commerce/add_customer.html', {'form': form})
+
 
 # class CustomerCreateView(CreateView):
 #     model = Customer
@@ -236,6 +242,7 @@ def edit_customer(request, pk):
 
     return render(request, 'ecommerce/app/e-commerce/edit_customer.html', {'form': form})
 
+
 # class CustomerUpdateView(UpdateView):
 #     model = Customer
 #     form_class = CustomerModelForm
@@ -249,6 +256,7 @@ def delete_customer(request, pk):
         return redirect('ecommerce: customer_list')
     except Customer.DoesNotExist as e:
         print(e)
+
 
 # class CustomerDeleteView(DeleteView):
 #     model = Customer
@@ -265,6 +273,7 @@ def toggle_favourite(request, product_id):
     product.save()
 
     return JsonResponse({"favorite": product.favorite})
+
 
 # class ToggleFavoriteView(View):
 #     def post(self, request, product_id):
@@ -296,13 +305,13 @@ def view_cart(request):
 
     return render(request, 'ecommerce/app/e-commerce/shopping-cart.html', context)
 
+
 # class CartView(LoginRequiredMixin, View):
 #     def get(self, request):
 #         customer = get_object_or_404(Customer, email=request.user.email)
 #         cart_items = ShoppingCart.objects.filter(user=customer)
 #         total_price = sum(cart.get_total_price() for cart in cart_items) if cart_items else 0
 #         return render(request, 'ecommerce/shopping-cart.html', {'cart_items': cart_items, 'total_price': total_price})
-
 
 
 def add_to_cart(request, product_id):
@@ -318,6 +327,7 @@ def add_to_cart(request, product_id):
             messages.success(request, "Mahsulot savatchaga qo‘shildi!")
 
     return redirect('ecommerce:index')
+
 
 # class AddToCartView(LoginRequiredMixin, View):
 #     def post(self, request, product_id):
@@ -349,6 +359,7 @@ def remove_from_cart(request, product_id):
 
     return redirect('ecommerce:shopping_cart')
 
+
 # class RemoveFromCartView(LoginRequiredMixin, View):
 #     def post(self, request, product_id):
 #         product = get_object_or_404(Product, id=product_id)
@@ -364,12 +375,14 @@ def remove_from_cart(request, product_id):
 def order_list(request):
     return render(request, 'ecommerce/app/e-commerce/orders/order-list.html')
 
+
 # class OrderListView(View):
 #     def get(self, request):
 #         return render(request, 'ecommerce/order-list.html')
 
 def product_grid(request):
-    return render(request,'ecommerce/app/e-commerce/orders/order-list.html')
+    return render(request, 'ecommerce/app/e-commerce/orders/order-list.html')
+
 
 def default(request):
     products = Product.objects.all()
@@ -382,38 +395,89 @@ def default(request):
     }
     return render(request, 'ecommerce/index.html', context)
 
+
+def export_data(request):
+    format = request.GET.get('format', '')
+    response = None
+    if format == 'csv':
+        response = HttpResponse(content_type='text/csv')
+        response['Content-Disposition'] = 'attachment; filename=customers.csv'
+        writer = csv.writer(response)
+        writer.writerow(['Id', 'Full Name', 'Email', 'Phone Number', 'Address'])
+        for customer in Customer.objects.all():
+            writer.writerow([customer.id, customer.full_name, customer.email, customer.phone_number, customer.address])
+    elif format == 'json':
+        response = HttpResponse(content_type='application/json')
+        data = list(Customer.objects.all().values('full_name', 'email', 'address', 'phone_number'))
+        for customer in data:
+            customer['phone_number'] = str(customer['phone_number'])
+        response.write(json.dumps(data, indent=3))
+        response['Content-Disposition'] = 'attachment; filename=customers.json'
+    elif format == 'xlsx':
+        response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+        response['Content-Disposition'] = 'attachment; filename=customer_list.xlsx'
+        wb = Workbook()
+        ws = wb.active
+        ws.title = "Customers"
+        ws.append(['Id', 'Full Name', 'Email', 'Phone Number', 'Address'])
+        for customer in Customer.objects.all():
+            ws.append([
+                customer.id,
+                customer.full_name,
+                customer.email,
+                str(customer.phone_number),
+                customer.address
+            ])
+        wb.save(response)
+    else:
+        response = HttpResponse(status=404)
+        response.content = 'Bad request'
+    return response
+
+
 def followers(request):
     return render(request, 'ecommerce/app/social/followers.html')
 
+
 def profile(request):
-    return render(request,'ecommerce/pages/user/profile.html')
+    return render(request, 'ecommerce/pages/user/profile.html')
+
 
 def analytics(request):
-    return render(request,'ecommerce/dashboard/analytics.html')
+    return render(request, 'ecommerce/dashboard/analytics.html')
+
 
 def crm(request):
     return render(request, 'ecommerce/dashboard/crm.html')
 
+
 def e_commerce(request):
     return render(request, 'ecommerce/dashboard/e-commerce.html')
+
 
 def project_management(request):
     return render(request, 'ecommerce/dashboard/project-management.html')
 
+
 def saas(request):
     return render(request, 'ecommerce/dashboard/saas.html')
+
 
 def calendar(request):
     return render(request, 'ecommerce/app/calendar.html')
 
+
 def chat(request):
     return render(request, 'ecommerce/app/chat.html')
+
 
 def inbox(request):
     return render(request, 'ecommerce/app/email/inbox.html')
 
+
 def email_detail(request):
     return render(request, 'ecommerce/app/email/email-detail.html')
+
 
 def compose(request):
     return render(request, 'ecommerce/app/email/compose.html')

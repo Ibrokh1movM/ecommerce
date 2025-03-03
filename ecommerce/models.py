@@ -192,7 +192,7 @@ class Customer(BaseModel):
     send_email_to = models.EmailField()
     address = models.TextField()
     phone_number = PhoneNumberField(region="UZ", blank=True, null=True)
-    invoice_prefix = models.CharField(max_length=5, default=generate_invoice_prefix, unique=True)
+    invoice_prefix = models.CharField(default=generate_invoice_prefix, unique=True)
     invoice_number = models.IntegerField()
 
     @property
